@@ -1,0 +1,12 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "nome": "Tênis Esportivo",
+      "valor": 199.99,
+      "quantidade": 10,
+      "image": "https://images.pexels.com/photos/3616993/pexels-photo-3616993.jpeg",
+      "actions": true
+    }
+  ]
+}

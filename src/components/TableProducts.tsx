@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
 import { ProductsProvider, useProducts } from "@/data/contexts/ProductsContext";
 
 const TableProducts = () => {
-  const { products, removeProduct } = useProducts();
+  const { products, removeProduct, loadProduct } = useProducts();
 
   return (
     <table className="table-auto  w-full ">
@@ -47,7 +47,9 @@ const TableProducts = () => {
                   <CustomButton
                     icon={<IconEdit />}
                     className="bg-transparent text-yellow-400 border-yellow-400"
-                    onClick={() => {}}
+                    onClick={() => {
+                      loadProduct(product.id);
+                    }}
                   />
                   <CustomButton
                     icon={<IconTrash />}

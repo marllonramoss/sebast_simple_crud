@@ -13,8 +13,15 @@ export interface Product {
 
 interface ProductsContextType {
   products: Product[];
+  selectedProduct: Product | null;
+  setSelectedProduct: (product: Product | null) => void;
+  loadProduct: (id: number) => Promise<void>;
   addProduct: (product: Product) => void;
   removeProduct: (id: number) => void;
+  editProduct: (
+    id: number,
+    updatedProduct: Omit<Product, "id">
+  ) => Promise<void>;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(
@@ -27,6 +34,8 @@ export const ProductsProvider = ({
   children: React.ReactNode;
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
+
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Buscar produtos da API ao carregar o contexto
   useEffect(() => {
@@ -72,8 +81,54 @@ export const ProductsProvider = ({
     );
   };
 
+  const loadProduct = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:5000/products/${id}`);
+      if (!response.ok) throw new Error("Produto não encontrado");
+
+      const product = await response.json();
+      setSelectedProduct(product); // Atualiza o contexto
+    } catch (error) {
+      console.error("Erro ao carregar produto:", error);
+    }
+  };
+
+  const editProduct = async (
+    id: number,
+    updatedProduct: Omit<Product, "id">
+  ): Promise<void> => {
+    try {
+      const res = await fetch(`http://localhost:5000/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...updatedProduct, id }),
+      });
+
+      if (!res.ok) throw new Error("Erro ao editar produto");
+
+      // Atualiza o estado local
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === id ? { ...updatedProduct, id } : product
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao editar produto:", error);
+    }
+  };
+
   return (
-    <ProductsContext.Provider value={{ products, addProduct, removeProduct }}>
+    <ProductsContext.Provider
+      value={{
+        products,
+        selectedProduct,
+        setSelectedProduct,
+        addProduct,
+        removeProduct,
+        loadProduct,
+        editProduct,
+      }}
+    >
       {children}
     </ProductsContext.Provider>
   );

@@ -1,28 +1,53 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import CustomInput from "./CustomInput";
 import { useForm } from "react-hook-form";
 import { useProducts } from "@/data/contexts/ProductsContext";
 
 const RegisterProductForm = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue, reset } = useForm();
+  const { addProduct, editProduct, selectedProduct, setSelectedProduct } =
+    useProducts();
 
-  const { addProduct } = useProducts();
+  // Atualiza os campos quando um produto for selecionado para edição
+  useEffect(() => {
+    if (selectedProduct) {
+      setValue("nome", selectedProduct.nome);
+      setValue("valor", selectedProduct.valor);
+      setValue("quantidade", selectedProduct.quantidade);
+      setValue(
+        "image",
+        selectedProduct.image ||
+          "https://cdn-icons-png.flaticon.com/512/482/482160.png"
+      );
+      setValue("actions", true);
+    }
+  }, [selectedProduct, setValue]);
 
   const handleSubmitForm = (data: any) => {
-    console.log(data);
-
     if (!data.image) {
       data.image = "https://cdn-icons-png.flaticon.com/512/482/482160.png";
     }
-    addProduct(data);
+
+    if (selectedProduct) {
+      // Se estiver editando, chama editProduct
+      editProduct(selectedProduct.id, data);
+      setSelectedProduct(null); // Reseta o estado de edição
+    } else {
+      // Se for um novo produto, chama addProduct
+      addProduct(data);
+    }
+
+    reset(); // Reseta o formulário após o envio
   };
 
   return (
-    <div className="h-fit  flex flex-col gap-8">
-      <div className=" flex justify-center items-center p-4">
-        <span className="text-3xl">Cadastro de Produtos</span>
+    <div className="h-fit flex flex-col gap-8">
+      <div className="flex justify-center items-center p-4">
+        <span className="text-3xl">
+          {selectedProduct ? "Editar Produto" : "Cadastro de Produtos"}
+        </span>
       </div>
       <form onSubmit={handleSubmit(handleSubmitForm)}>
         <div className="flex flex-col gap-6">
@@ -49,13 +74,13 @@ const RegisterProductForm = () => {
           <CustomInput
             type="text"
             placeholder="Url da imagem"
-            {...register("image", { required: false })}
+            {...register("image")}
           />
           <button
-            className="bg-transparent border border-green-500 text-green-500 rounded-lg w-fit px-4 py-2 "
+            className="bg-transparent border border-green-500 text-green-500 rounded-lg w-fit px-4 py-2"
             type="submit"
           >
-            Inserir
+            {selectedProduct ? "Salvar Edição" : "Inserir"}
           </button>
         </div>
       </form>

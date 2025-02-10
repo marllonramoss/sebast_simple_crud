@@ -51,11 +51,14 @@ export const ProductsProvider = ({
       const response = await fetch("http://localhost:5000/products");
       const data: Product[] = await response.json();
 
+      console.log("DATA: ");
+      console.log(data);
+
       // Gerar um novo ID incremental
       const newId =
         data.length > 0 ? Math.max(...data.map((p) => p.id)) + 1 : 1;
 
-      const newProduct = { ...product, id: newId, actions: true };
+      const newProduct = { ...product, id: newId.toString(), actions: true };
 
       // Adicionar ao servidor
       const res = await fetch("http://localhost:5000/products", {
@@ -67,7 +70,7 @@ export const ProductsProvider = ({
       if (!res.ok) throw new Error("Erro ao adicionar produto");
 
       // Atualizar o estado local
-      setProducts((prev) => [...prev, newProduct]);
+      setProducts((prev) => [...prev, { ...newProduct, id: +newProduct.id }]);
     } catch (error) {
       console.error("Erro ao adicionar produto:", error);
     }

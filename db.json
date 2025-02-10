@@ -1,9 +1,9 @@
 {
   "products": [
     {
-      "id": 3,
-      "nome": "dado",
-      "valor": "2",
+      "id": "2",
+      "nome": "vassoura",
+      "valor": "23",
       "quantidade": "2",
       "image": "https://cdn-icons-png.flaticon.com/512/482/482160.png",
       "actions": true

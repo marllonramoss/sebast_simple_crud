@@ -9,10 +9,11 @@ server.use(jsonServer.bodyParser);
 // Middleware para converter ID da URL para número
 server.use((req, res, next) => {
   if (req.params.id) {
-    req.params.id = Number(req.params.id); // Converte ID para número
+    req.params.id = String(req.params.id); // Converte o ID para string
   }
   next();
 });
+
 
 server.use(router);
 server.listen(5000, () => {
